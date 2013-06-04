@@ -25,7 +25,6 @@ createLayer numNodes numWeightsPerNode learningRate =
 
 listProduct a b = zipWith (*) a b
 
-
 sumNodeError :: Node -> Layer -> Double
 sumNodeError node childLayer = foldl (+) 0 (listProduct (weights node) (errors childLayer))
 
@@ -35,7 +34,7 @@ calculateNodeError node childLayer = (sumNodeError node childLayer) * (value nod
 
 calculateErrors :: Layer -> Layer -> Layer
 calculateErrors layer childLayer = Layer (nodes layer)
-                                         (map calculateNodeError (nodes layer) childLayer ) -- need to map each of the nodes in the layer, and the childLayer to calculateNodeError
+                                         (map (\n -> calculateNodeError n childLayer) (nodes layer) )
                                          (teacherSignals layer)
                                          (learningRate layer)
 
