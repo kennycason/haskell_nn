@@ -44,7 +44,6 @@ calculateErrors layer childLayer = Layer (nodes layer)
                                          (learningRate layer)
 
 -- adjustWeights()
-
 sumAdjustWeight :: Double -> Double -> Double -> Double
 sumAdjustWeight learningRate value error = value + (learningRate * value * error)
 
@@ -69,8 +68,13 @@ clearAllValues layer = Layer (map clearNodeValue (nodes layer))
                              (learningRate layer)
 
 -- calculateNodeValues()
+getFirstNode :: Layer -> Node
+getFirstNode layer = head (nodes layer)
+
 calculateNodeValues :: Layer -> Layer
-calculateNodeValues layer = layer
+calculateNodeValues layer | length (weights (getFirstNode layer)) == 0 = layer
+                          | otherwise = layer
+    
 
 
 
