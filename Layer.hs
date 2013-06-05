@@ -68,9 +68,15 @@ clearAllValues layer = layer { nodes = (map clearNodeValue (nodes layer)) }
 getFirstNode :: Layer -> Node
 getFirstNode layer = head (nodes layer)
 
+
+sigmoidNodeValue :: Node -> Node
+sigmoidNodeValue node = node { value = sigmoid (value node) }
+
 calculateNodeValues :: Layer -> Layer
-calculateNodeValues layer | null (weights (getFirstNode layer)) = layer
-                          | otherwise = layer
+calculateNodeValues layer -- output layer
+                          | null (weights (getFirstNode layer)) = layer { nodes = map sigmoidNodeValue (nodes layer) } 
+                          -- other layers
+                          | otherwise = layer { nodes = map sigmoidNodeValue (nodes layer) }  
     
 
 

@@ -9,5 +9,7 @@ main = do
     let l = createLayer 2 10 0.2
     print l
 
-    print (sigmoid 0.8)
+    let l2 = calculateNodeValues l
+    print l2
+    print (sigmoid 0.5)
     print "done"
