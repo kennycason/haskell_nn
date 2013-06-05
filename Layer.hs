@@ -8,6 +8,7 @@ module Layer
 )
 where
 
+import Math
 import Node
 
 data Layer = Layer { 
@@ -28,18 +29,18 @@ createLayer numNodes numWeightsPerNode learningRate =
               learningRate
 
 -- general helper(s)
-listProduct a b = zipWith (*) a b
+listProduct = zipWith (*)
 
 -- calculateErrors()
 sumNodeError :: Node -> Layer -> Double
 sumNodeError node childLayer = foldl (+) 0 (listProduct (weights node) (errors childLayer))
 
 calculateNodeError :: Node -> Layer -> Double
-calculateNodeError node childLayer = (sumNodeError node childLayer) * (value node) * (1.0 - (value node))
+calculateNodeError node childLayer = sumNodeError node childLayer * (value node) * (1.0 - (value node))
 
 calculateErrors :: Layer -> Layer -> Layer
 calculateErrors layer childLayer = layer { 
-                                      errors = (map (\node -> calculateNodeError node childLayer) (nodes layer))
+                                      errors = map (\node -> calculateNodeError node childLayer) (nodes layer)
                                    }
                                
 -- adjustWeights()
@@ -68,7 +69,7 @@ getFirstNode :: Layer -> Node
 getFirstNode layer = head (nodes layer)
 
 calculateNodeValues :: Layer -> Layer
-calculateNodeValues layer | length (weights (getFirstNode layer)) == 0 = layer
+calculateNodeValues layer | null (weights (getFirstNode layer)) = layer
                           | otherwise = layer
     
 
