@@ -42,7 +42,6 @@ calculateErrors layer childLayer = layer {
                                       errors = (map (\node -> calculateNodeError node childLayer) (nodes layer))
                                    }
                                
-
 -- adjustWeights()
 sumAdjustWeight :: Double -> Double -> Double -> Double
 sumAdjustWeight learningRate value error = value + (learningRate * value * error)
@@ -56,7 +55,6 @@ adjustNodesWeight node childLayer = node {
 
 adjustWeights :: Layer -> Layer -> Layer
 adjustWeights layer childLayer = layer { nodes = map (\node -> adjustNodesWeight node childLayer) (nodes layer) }
-                                       
 
 -- clearAllValues()
 clearNodeValue :: Node -> Node
@@ -66,7 +64,6 @@ clearAllValues :: Layer -> Layer
 clearAllValues layer = layer { nodes = (map clearNodeValue (nodes layer)) }
 
 -- calculateNodeValues()
-
 getFirstNode :: Layer -> Node
 getFirstNode layer = head (nodes layer)
 
