@@ -1,8 +1,8 @@
 module Node
-   (Node(..), 
-    numWeights, 
-    createNode, 
-    compareNode,
+   (Node(..)
+    , numWeights
+    , createNode
+    , compareNode
     )
 where
 

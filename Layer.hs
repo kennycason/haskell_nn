@@ -1,12 +1,12 @@
 module Layer
-   (Layer(..),  
-    createLayer, 
-    createEmptyLayer,
-    calculateErrors,
-    adjustWeights,
-    clearLayerValues,
-    calculateNodeValues,
-    isOutputLayer
+   (Layer(..)
+    , createLayer
+    , createEmptyLayer
+    , calculateErrors
+    , adjustWeights
+    , clearLayerValues
+    , calculateNodeValues
+    , isOutputLayer
 )
 where
 
@@ -14,10 +14,10 @@ import Math
 import Node
 
 data Layer = Layer {  
-                nodes :: [Node], 
-                errors :: [Double], 
-                teacherSignals :: [Double],
-                learningRate :: Double
+                nodes :: [Node]
+                , errors :: [Double]
+                , teacherSignals :: [Double]
+                , learningRate :: Double
             } deriving Show
 
 
@@ -26,11 +26,13 @@ createNodeRow numNodes numWeightsPerNode = replicate numNodes (createNode numWei
 
 
 createLayer :: Int -> Int -> Double -> Layer
-createLayer numNodes numWeightsPerNode learningRate =
-        Layer (createNodeRow numNodes numWeightsPerNode) -- nodes
-              (replicate numWeightsPerNode 0.0) -- errors
-              (replicate numNodes 0.0) -- teacher signals
-              learningRate
+createLayer numNodes numWeightsPerNode theLearningRate =
+        Layer {
+              nodes = (createNodeRow numNodes numWeightsPerNode)
+              , errors = (replicate numWeightsPerNode 0.0)
+              , teacherSignals = (replicate numNodes 0.0)
+              , learningRate = theLearningRate
+        }
 
 
 createEmptyLayer = createLayer 0 0 0
