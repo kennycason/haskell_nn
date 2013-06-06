@@ -1,15 +1,18 @@
+import NN
+import Math
 import Node
 import Layer
-import Math
 
 main = do
-    let n2 = createNode 10 0.5
-    print n2
+    -- let n2 = createNode 10 0.5
+    -- print n2
 
-    let l = createLayer 2 10 0.2
-    print l
+    -- let l = createLayer 2 10 0.7
+    -- print l
 
-    let l2 = calculateNodeValues l
-    print l2
-    print (sigmoid 0.5)
+    -- print "sigmoid(.05)"
+    -- print (sigmoid 0.5)
+
+    print "create NN"
+    print (createNN 0.2)
     print "done"

@@ -1,17 +1,19 @@
 module Layer
    (Layer(..),  
     createLayer, 
+    createEmptyLayer,
     calculateErrors,
     adjustWeights,
     clearAllValues,
-    calculateNodeValues
+    calculateNodeValues,
 )
 where
 
 import Math
 import Node
 
-data Layer = Layer { 
+
+data Layer = Layer {  
                 nodes :: [Node], 
                 errors :: [Double], 
                 teacherSignals :: [Double],
@@ -24,9 +26,11 @@ createNodeRow numNodes numWeightsPerNode = replicate numNodes (createNode numWei
 createLayer :: Int -> Int -> Double -> Layer
 createLayer numNodes numWeightsPerNode learningRate =
         Layer (createNodeRow numNodes numWeightsPerNode) -- nodes
-              (replicate numWeightsPerNode 0.0) -- errors
-              (replicate numNodes 0.0) -- teacher signals
+              (replicate numWeightsPerNode 0.3) -- errors
+              (replicate numNodes 0.2) -- teacher signals
               learningRate
+
+createEmptyLayer = createLayer 0 0 0
 
 -- general helper(s)
 listProduct = zipWith (*)
@@ -67,7 +71,6 @@ clearAllValues layer = layer { nodes = (map clearNodeValue (nodes layer)) }
 -- calculateNodeValues()
 getFirstNode :: Layer -> Node
 getFirstNode layer = head (nodes layer)
-
 
 sigmoidNodeValue :: Node -> Node
 sigmoidNodeValue node = node { value = sigmoid (value node) }
