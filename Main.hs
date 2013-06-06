@@ -13,8 +13,22 @@ main = do
     -- print "sigmoid(.05)"
     -- print (sigmoid 0.5)
 
-    let nn = (createNN 0.2)
+    let teacherSignals = [1.0]
+
+    let trainInput = [1.0, 1.0]
 
     print "create NN"
-    print (createNN 0.2)
+    print "set input and teacherSignals"
+    let nn =  (createNN 2 1 0.2) 
+    print nn
+
+    print "error"
+    print (calculateError nn)
+
+    print (trainStep nn trainInput teacherSignals)
+
+    print "output"
+    print (getOutput nn)
+    
+
     print "done"

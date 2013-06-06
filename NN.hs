@@ -5,6 +5,7 @@ module NN
     backPropagate,
     calculateError,
     setTeacherSignals,
+    trainStep, 
     getOutput,
     setInput
 )
@@ -20,6 +21,14 @@ data NN = NN {
                output :: Layer
              } deriving Show
 
+trainStep :: NN -> [Double] -> [Double] -> NN
+
+trainStep nn trainInput trainOutput =
+        feedFoward 
+               (setTeacherSignals (setInput nn trainInput) trainOutput)
+                    
+
+
 -- setInput()
 setNodeInput :: Node -> Double -> Node
 setNodeInput node newValue = node { value = newValue }
@@ -32,6 +41,7 @@ mapInputLayer layer values = layer {
                                                ]  
                                    }
 
+-- setInput()
 setInput :: NN -> [Double] -> NN
 setInput nn values = nn { input = mapInputLayer (input nn) values }
 
@@ -54,11 +64,12 @@ setTeacherSignals nn teacherSignals = nn {
 
 
 -- createNN()
-createNN :: Double -> NN
-createNN learningRate = NN { input = (createLayer 2 10 learningRate),
-                hidden = (createLayer 10 1 learningRate),
-                output = (createLayer 1 0 learningRate)
+createNN :: Int -> Int -> Double -> NN
+createNN numInput numOutput learningRate = NN { input = (createLayer numInput 10 learningRate),
+                hidden = (createLayer 10 numOutput learningRate),
+                output = (createLayer numOutput 0 learningRate)
               }
+
 
 -- feedFoward()
 feedFoward :: NN -> NN
@@ -70,9 +81,6 @@ feedFoward nn = nn {
 
 
 -- calculateError()
-listDiff :: [Double] -> [Double] -> [Double]
-listDiff a b = zipWith (-) a b
-
 listSquared :: [Double] -> [Double]
 listSquared l = map (\n -> n * n) l
 
@@ -81,10 +89,10 @@ sumList l = foldl (+) 0.0 l
 
 calculateError :: NN -> Double
 calculateError nn = sumList (
-                         listSquared (
-                                 listDiff 
-                                       (teacherSignals (output nn)) 
-                                       (teacherSignals (output nn)) ))
+                         listSquared ([ (value node) - teacherSignal
+                                      | node <- nodes (output nn)
+                                      , teacherSignal <- teacherSignals (output nn)
+                                      ]))
 
 
 -- backPropagate()
