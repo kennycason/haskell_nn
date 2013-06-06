@@ -35,13 +35,10 @@ setNodeInput node newValue = node { value = newValue }
 
 mapInputLayer :: Layer -> [Double] -> Layer
 mapInputLayer layer values = layer { 
-                                       nodes = [ (setNodeInput node value) 
-                                               | node <- (nodes layer) 
-                                               , value <- values 
-                                               ]  
+                                       nodes = zipWith (\node value -> setNodeInput node value) 
+                                                             (nodes layer)  values
                                    }
 
--- setInput()
 setInput :: NN -> [Double] -> NN
 setInput nn values = nn { input = mapInputLayer (input nn) values }
 
@@ -89,11 +86,11 @@ sumList l = foldl (+) 0.0 l
 
 calculateError :: NN -> Double
 calculateError nn = sumList (
-                         listSquared ([ (value node) - teacherSignal
-                                      | node <- nodes (output nn)
-                                      , teacherSignal <- teacherSignals (output nn)
-                                      ]))
+                     listSquared ( 
+                           zipWith (\node teacherSignal -> (value node) - teacherSignal) 
+                                           (nodes (output nn))  (teacherSignals (output nn))
 
+                          ))
 
 -- backPropagate()
 backPropagate :: NN -> NN

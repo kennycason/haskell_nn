@@ -94,10 +94,9 @@ updateChildNode node newValue = node { value = newValue }
 
 calculateNodeValues :: Layer -> Layer -> Layer
 calculateNodeValues layer childLayer = childLayer { 
-                                       nodes = [ updateChildNode childNode (calculateChildNodeValue node childNode)
-                                       | node <- (nodes layer)
-                                       , childNode <- (nodes childLayer)
-                                       ]
+                                       nodes = zipWith 
+                                                (\childNode node -> updateChildNode childNode (calculateChildNodeValue node childNode))
+                                                (nodes childLayer)  (nodes layer)
                                    }
 
 

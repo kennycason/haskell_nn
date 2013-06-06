@@ -22,13 +22,22 @@ main = do
     let nn =  (createNN 2 1 0.2) 
     print nn
 
+    print "1"
+    print (setInput nn [1.0, 1.0]) 
+
+    print "2"
+    print (setInput (setInput nn [1.0, 1.0]) [1.0, 1.0])
+
+    print "3"
+    print (setInput (setInput (setInput nn [1.0, 1.0]) [1.0, 1.0]) [1.0, 1.0])
+
     print "error"
     print (calculateError nn)
 
-    print (trainStep nn trainInput teacherSignals)
+    --print (trainStep nn trainInput teacherSignals)
 
-    print "output"
-    print (getOutput nn)
+    --print "output"
+    --print (getOutput nn)
     
 
     print "done"
