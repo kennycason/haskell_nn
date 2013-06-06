@@ -37,14 +37,6 @@ createLayer numNodes numWeightsPerNode theLearningRate =
 
 createEmptyLayer = createLayer 0 0 0
 
-
--- general helper(s)
-listProduct = zipWith (*)
-
-sigmoidNodeValue :: Node -> Node
-sigmoidNodeValue node = node { value = sigmoid (value node) }
-
-
 -- calculateErrors()
 sumNodeError :: Node -> Layer -> Double
 sumNodeError node childLayer = foldl (+) 0 (listProduct (weights node) (errors childLayer))
@@ -74,8 +66,6 @@ adjustWeights layer childLayer = layer { nodes = map (\node -> adjustNodeWeight 
 
 
 -- clearAllValues()
-clearNodeValue :: Node -> Node
-clearNodeValue node = Node 0.0 (weights node)
 
 clearLayerValues :: Layer -> Layer
 clearLayerValues layer = layer { nodes = (map clearNodeValue (nodes layer)) }

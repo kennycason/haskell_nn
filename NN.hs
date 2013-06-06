@@ -22,12 +22,21 @@ data NN = NN {
                , output :: Layer
              } deriving Show
 
-trainStep :: NN -> [Double] -> [Double] -> NN
-
-trainStep nn trainInput trainOutput =
-        ({-clearAllValues.backPropagate-}backPropagate.feedForward)
+trainSingleStep :: NN -> [Double] -> [Double] -> NN
+trainSingleStep nn trainInput trainOutput = 
+                (clearAllValues.backPropagate.feedForward)
                         (setTeacherSignals (setInput nn trainInput) trainOutput)
-                    
+
+trainStep :: NN -> [Double] -> [Double] -> Int-> NN
+trainStep nn trainInput trainOutput 1 = trainSingleStep nn trainInput trainOutput
+trainStep nn trainInput trainOutput cycles = 
+                             trainStep 
+                                    (trainSingleStep nn trainInput trainOutput) 
+                                    trainInput 
+                                    trainOutput 
+                                    (cycles-1)
+
+
 
 -- setInput()
 setNodeInput :: Node -> Double -> Node
@@ -45,7 +54,7 @@ setInput nn values = nn { input = mapInputLayer (input nn) values }
 
 -- getOutput()
 getOutput :: NN -> [Double]
-getOutput nn = map (\node -> value node) (nodes (output nn))
+getOutput nn = map (\node -> sigmoid (value node)) (nodes (output nn))
 
 
 -- setTeacherSignals()
@@ -83,7 +92,6 @@ clearAllValues nn = nn {
 
 
 -- calculateError()
-
 calculateError :: NN -> Double
 calculateError nn = listSum (
                      listSquared ( 

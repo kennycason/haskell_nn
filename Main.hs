@@ -23,7 +23,7 @@ main = do
     print nn
 
     print "train 1 step"
-    let nn2 = (trainStep nn trainInput teacherSignals)
+    let nn2 = (trainStep nn trainInput teacherSignals 10)
     print nn2
 
     print "output"

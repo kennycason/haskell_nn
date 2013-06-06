@@ -1,6 +1,7 @@
 
 module Math
    (sigmoid
+    , listProduct
     , listSquared
     , listSum
     )
@@ -12,9 +13,14 @@ sigmoid :: Double -> Double
 sigmoid x = 1 / (1 + e**(-x))
 
 
+-- listProduct()
+listProduct a b = zipWith (*) a b
+
+
 -- listSquared()
 listSquared :: [Double] -> [Double]
 listSquared l = map (\n -> n * n) l
+
 
 -- sumList()
 listSum :: [Double] -> Double
