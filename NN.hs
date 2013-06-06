@@ -25,7 +25,7 @@ data NN = NN {
 trainStep :: NN -> [Double] -> [Double] -> NN
 
 trainStep nn trainInput trainOutput =
-        ({-clearAllValues.-}feedForward)
+        ({-clearAllValues.backPropagate-}feedForward)
                         (setTeacherSignals (setInput nn trainInput) trainOutput)
                     
 
@@ -103,3 +103,4 @@ backPropagate nn = nn {
                     hidden = adjustWeights (calculateErrors (hidden nn) (output nn)) (output nn),
                     input = adjustWeights (input nn) (hidden nn)
                   }
+
