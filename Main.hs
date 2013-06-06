@@ -13,6 +13,8 @@ main = do
     -- print "sigmoid(.05)"
     -- print (sigmoid 0.5)
 
+    let nn = (createNN 0.2)
+
     print "create NN"
     print (createNN 0.2)
     print "done"

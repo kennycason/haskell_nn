@@ -6,12 +6,12 @@ module Layer
     adjustWeights,
     clearAllValues,
     calculateNodeValues,
+    calculateOutputNodeValues
 )
 where
 
 import Math
 import Node
-
 
 data Layer = Layer {  
                 nodes :: [Node], 
@@ -20,8 +20,10 @@ data Layer = Layer {
                 learningRate :: Double
             } deriving Show
 
+
 createNodeRow :: Int -> Int -> [Node]
 createNodeRow numNodes numWeightsPerNode = replicate numNodes (createNode numWeightsPerNode 0.5)
+
 
 createLayer :: Int -> Int -> Double -> Layer
 createLayer numNodes numWeightsPerNode learningRate =
@@ -30,10 +32,13 @@ createLayer numNodes numWeightsPerNode learningRate =
               (replicate numNodes 0.2) -- teacher signals
               learningRate
 
+
 createEmptyLayer = createLayer 0 0 0
+
 
 -- general helper(s)
 listProduct = zipWith (*)
+
 
 -- calculateErrors()
 sumNodeError :: Node -> Layer -> Double
@@ -46,7 +51,8 @@ calculateErrors :: Layer -> Layer -> Layer
 calculateErrors layer childLayer = layer { 
                                       errors = map (\node -> calculateNodeError node childLayer) (nodes layer)
                                    }
-                               
+        
+                       
 -- adjustWeights()
 sumAdjustWeight :: Double -> Double -> Double -> Double
 sumAdjustWeight learningRate value error = value + (learningRate * value * error)
@@ -61,6 +67,7 @@ adjustNodesWeight node childLayer = node {
 adjustWeights :: Layer -> Layer -> Layer
 adjustWeights layer childLayer = layer { nodes = map (\node -> adjustNodesWeight node childLayer) (nodes layer) }
 
+
 -- clearAllValues()
 clearNodeValue :: Node -> Node
 clearNodeValue node = Node 0.0 (weights node)
@@ -68,24 +75,28 @@ clearNodeValue node = Node 0.0 (weights node)
 clearAllValues :: Layer -> Layer
 clearAllValues layer = layer { nodes = (map clearNodeValue (nodes layer)) }
 
+
 -- calculateNodeValues()
+isOutputLayer :: Layer -> Bool
+isOutputLayer layer = null (weights (getFirstNode layer))
+
 getFirstNode :: Layer -> Node
 getFirstNode layer = head (nodes layer)
 
 sigmoidNodeValue :: Node -> Node
 sigmoidNodeValue node = node { value = sigmoid (value node) }
 
-calculateNodeValues :: Layer -> Layer
-calculateNodeValues layer -- output layer
-                          | null (weights (getFirstNode layer)) = layer { nodes = map sigmoidNodeValue (nodes layer) } 
-                          -- other layers
-                          | otherwise = layer { nodes = map sigmoidNodeValue (nodes layer) }  
+productList :: [Double] -> Double
+productList l = foldl (*) 1.0 l
+
+calculateNodeValues :: Layer -> Layer -> Layer
+calculateNodeValues layer childLayer = layer { nodes = map sigmoidNodeValue (nodes layer) }  
+
+
+-- calculateOutputNodeValues()
+calculateOutputNodeValues :: Layer -> Layer
+calculateOutputNodeValues layer = layer { nodes = map sigmoidNodeValue (nodes layer) }  
     
-
-
-
-
-
 
 
 

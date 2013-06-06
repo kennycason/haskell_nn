@@ -63,9 +63,9 @@ createNN learningRate = NN { input = (createLayer 2 10 learningRate),
 -- feedFoward()
 feedFoward :: NN -> NN
 feedFoward nn = nn {
-                    input = calculateNodeValues (input nn),
-                    hidden = calculateNodeValues (hidden nn),
-                    output = calculateNodeValues (output nn)
+                    input = calculateNodeValues (input nn) (hidden nn),
+                    hidden = calculateNodeValues (hidden nn) (output nn),
+                    output = calculateOutputNodeValues (output nn)
                  }
 
 
