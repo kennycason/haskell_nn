@@ -2,7 +2,7 @@
 module Math
    (sigmoid
     , listSquared
-    , sumList
+    , listSum
     )
 where
 
@@ -17,5 +17,5 @@ listSquared :: [Double] -> [Double]
 listSquared l = map (\n -> n * n) l
 
 -- sumList()
-sumList :: [Double] -> Double
-sumList l = foldl (+) 0.0 l
+listSum :: [Double] -> Double
+listSum l = foldl (+) 0.0 l

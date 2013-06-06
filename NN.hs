@@ -85,7 +85,7 @@ clearAllValues nn = nn {
 -- calculateError()
 
 calculateError :: NN -> Double
-calculateError nn = sumList (
+calculateError nn = listSum (
                      listSquared ( 
                            zipWith (\node teacherSignal -> (value node) - teacherSignal) 
                                            (nodes (output nn))  (teacherSignals (output nn))
