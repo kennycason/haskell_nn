@@ -6,7 +6,8 @@ module Layer
     adjustWeights,
     clearAllValues,
     calculateNodeValues,
-    calculateOutputNodeValues
+    calculateOutputNodeValues,
+    isOutputLayer
 )
 where
 
@@ -38,6 +39,9 @@ createEmptyLayer = createLayer 0 0 0
 
 -- general helper(s)
 listProduct = zipWith (*)
+
+sigmoidNodeValue :: Node -> Node
+sigmoidNodeValue node = node { value = sigmoid (value node) }
 
 
 -- calculateErrors()
@@ -77,25 +81,39 @@ clearAllValues layer = layer { nodes = (map clearNodeValue (nodes layer)) }
 
 
 -- calculateNodeValues()
-isOutputLayer :: Layer -> Bool
-isOutputLayer layer = null (weights (getFirstNode layer))
+multConstList :: Double -> [Double] -> [Double]
+multConstList const list = map (const *) list
 
-getFirstNode :: Layer -> Node
-getFirstNode layer = head (nodes layer)
+calculateChildNodeValue :: Node -> Node -> Double
+calculateChildNodeValue node childNode =  (foldl (+) 
+                                                  (value childNode)
+                                                  (multConstList (value node) (weights node)) )
 
-sigmoidNodeValue :: Node -> Node
-sigmoidNodeValue node = node { value = sigmoid (value node) }
-
-productList :: [Double] -> Double
-productList l = foldl (*) 1.0 l
+updateChildNode :: Node -> Double -> Node
+updateChildNode node newValue = node { value = newValue }
 
 calculateNodeValues :: Layer -> Layer -> Layer
-calculateNodeValues layer childLayer = layer { nodes = map sigmoidNodeValue (nodes layer) }  
+calculateNodeValues layer childLayer = childLayer { 
+                                       nodes = [ updateChildNode childNode (calculateChildNodeValue node childNode)
+                                       | node <- (nodes layer)
+                                       , childNode <- (nodes childLayer)
+                                       ]
+                                   }
 
 
 -- calculateOutputNodeValues()
 calculateOutputNodeValues :: Layer -> Layer
 calculateOutputNodeValues layer = layer { nodes = map sigmoidNodeValue (nodes layer) }  
+
+
+-- isOutputLayer()
+isOutputLayer :: Layer -> Bool
+isOutputLayer layer = null (weights (getFirstNode layer))
+
+
+-- getFirstNode()
+getFirstNode :: Layer -> Node
+getFirstNode layer = head (nodes layer)
     
 
 
