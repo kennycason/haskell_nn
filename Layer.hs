@@ -1,12 +1,12 @@
 module Layer
    (Layer(..)
-    , createLayer
-    , createEmptyLayer
-    , calculateErrors
-    , adjustWeights
-    , clearLayerValues
-    , calculateNodeValues
-    , isOutputLayer
+    ,createLayer
+    ,createEmptyLayer
+    ,calculateErrors
+    ,adjustWeights
+    ,clearLayerValues
+    ,calculateNodeValues
+    ,isOutputLayer
 )
 where
 
@@ -15,9 +15,9 @@ import Node
 
 data Layer = Layer {  
                 nodes :: [Node]
-                , errors :: [Double]
-                , teacherSignals :: [Double]
-                , learningRate :: Double
+                ,errors :: [Double]
+                ,teacherSignals :: [Double]
+                ,learningRate :: Double
             } deriving Show
 
 
@@ -29,9 +29,9 @@ createLayer :: Int -> Int -> Double -> Layer
 createLayer numNodes numWeightsPerNode theLearningRate =
         Layer {
               nodes = (createNodeRow numNodes numWeightsPerNode)
-              , errors = (replicate numWeightsPerNode 0.0)
-              , teacherSignals = (replicate numNodes 0.0)
-              , learningRate = theLearningRate
+              ,errors = (replicate numWeightsPerNode 0.0)
+              ,teacherSignals = (replicate numNodes 0.0)
+              ,learningRate = theLearningRate
         }
 
 
@@ -45,9 +45,23 @@ calculateNodeError :: Node -> Layer -> Double
 calculateNodeError node childLayer = (sumNodeError node childLayer) * (value node) * (1.0 - (value node))
 
 calculateErrors :: Layer -> Layer -> Layer
-calculateErrors layer childLayer = layer { 
-                                      errors = map (\node -> calculateNodeError node childLayer) (nodes layer)
-                                   }
+calculateErrors layer childLayer 
+                            | isOutputLayer layer = calculateOutputErrors layer
+                            | otherwise = layer { 
+                                            errors = map (\node -> calculateNodeError node childLayer) (nodes layer)
+                                        }
+  
+calculateOutputNodeError :: Node -> Double -> Double
+calculateOutputNodeError node teacherSignal = (teacherSignal - (value node)) 
+                                                          * ((value node) * (1.0 - (value node)))
+                        
+calculateOutputErrors :: Layer -> Layer
+calculateOutputErrors layer = layer {
+                                errors = zipWith (\node teacherSignal -> 
+                                                        calculateOutputNodeError node teacherSignal)
+                                                                                     (nodes layer)
+                                                                                     (teacherSignals layer)
+                            }
         
                        
 -- adjustWeights()
@@ -66,7 +80,6 @@ adjustWeights layer childLayer = layer { nodes = map (\node -> adjustNodeWeight 
 
 
 -- clearAllValues()
-
 clearLayerValues :: Layer -> Layer
 clearLayerValues layer = layer { nodes = (map clearNodeValue (nodes layer)) }
 
@@ -94,11 +107,6 @@ calculateNodeValues layer childLayer = childLayer {
                                    }
 
 
--- calculateOutputNodeValues()
--- calculateOutputNodeValues :: Layer -> Layer
--- calculateOutputNodeValues layer = layer { nodes = map sigmoidNodeValue (nodes layer) }  
-
-
 -- isOutputLayer()
 isOutputLayer :: Layer -> Bool
 isOutputLayer layer = null (weights (getFirstNode layer))
@@ -108,14 +116,4 @@ isOutputLayer layer = null (weights (getFirstNode layer))
 getFirstNode :: Layer -> Node
 getFirstNode layer = head (nodes layer)
     
-
-
-
-
-
-
-
-
-
-
 

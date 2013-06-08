@@ -1,14 +1,14 @@
 module NN
    (NN(..)
-    , createNN
-    , feedForward
-    , clearAllValues
-    , backPropagate
-    , calculateError
-    , setTeacherSignals
-    , trainStep
-    , getOutput
-    , setInput
+    ,createNN
+    ,feedForward
+    ,clearAllValues
+    ,backPropagate
+    ,calculateError
+    ,setTeacherSignals
+    ,trainStep
+    ,getOutput
+    ,setInput
 )
 where
 
@@ -18,9 +18,10 @@ import Node
 
 data NN = NN { 
                input :: Layer
-               , hidden :: Layer
-               , output :: Layer
+               ,hidden :: Layer
+               ,output :: Layer
              } deriving Show
+
 
 trainSingleStep :: NN -> [Double] -> [Double] -> NN
 trainSingleStep nn trainInput trainOutput = 
@@ -35,7 +36,6 @@ trainStep nn trainInput trainOutput cycles =
                                     trainInput 
                                     trainOutput 
                                     (cycles-1)
-
 
 
 -- setInput()
@@ -59,7 +59,10 @@ getOutput nn = map (\node -> sigmoid (value node)) (nodes (output nn))
 
 -- setTeacherSignals()
 setLayerTeacherSignals :: Layer -> [Double] -> Layer
-setLayerTeacherSignals layer newTeacherSignals = layer { teacherSignals = newTeacherSignals }
+setLayerTeacherSignals layer newTeacherSignals = layer { 
+                                                    teacherSignals = newTeacherSignals
+                                                    ,errors = (replicate (length newTeacherSignals) 0.0)
+                                                    }
 
 setTeacherSignals :: NN -> [Double] -> NN
 setTeacherSignals nn teacherSignals = nn { 
@@ -71,8 +74,8 @@ setTeacherSignals nn teacherSignals = nn {
 createNN :: Int -> Int -> Double -> NN
 createNN numInput numOutput learningRate = NN { 
                 input = (createLayer numInput 3 learningRate)
-                , hidden = (createLayer 3 numOutput learningRate)
-                , output = (createLayer numOutput 0 learningRate)
+                ,hidden = (createLayer 3 numOutput learningRate)
+                ,output = (createLayer numOutput 0 learningRate)
               }
 
 
@@ -86,8 +89,8 @@ feedForward nn = nn {
 clearAllValues :: NN -> NN
 clearAllValues nn = nn {
                         input = clearLayerValues (input nn)
-                        , hidden = clearLayerValues (hidden nn)
-                        , output = clearLayerValues (output nn)
+                        ,hidden = clearLayerValues (hidden nn)
+                        ,output = clearLayerValues (output nn)
                     }
 
 
@@ -104,7 +107,7 @@ calculateError nn = listSum (
 backPropagate :: NN -> NN
 backPropagate nn = nn {
                     output = calculateErrors (output nn) createEmptyLayer
-                    , hidden = adjustWeights (calculateErrors (hidden nn) (output nn)) (output nn)
-                    , input = adjustWeights (input nn) (hidden nn)
+                    ,hidden = adjustWeights (calculateErrors (hidden nn) (output nn)) (output nn)
+                    ,input = adjustWeights (input nn) (hidden nn)
                   }
 

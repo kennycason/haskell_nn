@@ -23,11 +23,15 @@ main = do
     print nn
 
     print "train 1 step"
-    let nn2 = (trainStep nn trainInput teacherSignals 10)
+    let nn2 = (trainStep nn trainInput teacherSignals 100)
     print nn2
 
+    print "input [1.0, 1.0]"
+    let nn3 = feedForward (setInput nn2 [1.0, 1.0])
     print "output"
-    print (getOutput nn2)
-    
+    print (getOutput nn3)
+
+    print "calculate errors"
+    print (calculateErrors (hidden nn) (output nn))
 
     print "done"

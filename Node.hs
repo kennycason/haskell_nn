@@ -1,10 +1,10 @@
 module Node
    (Node(..)
-    , numWeights
-    , createNode
-    , compareNode
-    , sigmoidNodeValue
-    , clearNodeValue
+    ,numWeights
+    ,createNode
+    ,compareNode
+    ,sigmoidNodeValue
+    ,clearNodeValue
     )
 where
 
@@ -16,13 +16,18 @@ data Node = Node { value::Double, weights::[Double] } deriving Show
 sigmoidNodeValue :: Node -> Node
 sigmoidNodeValue node = node { value = sigmoid (value node) }
 
+
 -- clearNodeValue()
 clearNodeValue :: Node -> Node
 clearNodeValue node = Node 0.0 (weights node)
 
+
 -- createNode()
 createNode :: Int -> Double -> Node
-createNode numNodes defaultWeight = Node 0.0 (replicate numNodes defaultWeight)
+createNode numNodes defaultWeight = Node {
+                                        value = 0.0 
+                                        ,weights = replicate numNodes defaultWeight
+                                        }
 
 
 -- numWeights()

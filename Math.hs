@@ -1,9 +1,9 @@
 
 module Math
    (sigmoid
-    , listProduct
-    , listSquared
-    , listSum
+    ,listProduct
+    ,listSquared
+    ,listSum
     )
 where
 
