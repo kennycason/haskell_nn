@@ -12,7 +12,7 @@ module NN
 )
 where
 
-import Math
+import Utils
 import Layer
 import Node
 

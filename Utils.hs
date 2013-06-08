@@ -1,5 +1,5 @@
 
-module Math
+module Utils
    (sigmoid
     ,listProduct
     ,listSquared

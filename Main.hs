@@ -1,5 +1,5 @@
 import NN
-import Math
+import Utils
 import Node
 import Layer
 

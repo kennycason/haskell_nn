@@ -8,7 +8,7 @@ module Node
     )
 where
 
-import Math
+import Utils
 
 data Node = Node { value::Double, weights::[Double] } deriving Show
 

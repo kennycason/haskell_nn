@@ -13,7 +13,7 @@ module Layer
 )
 where
 
-import Math
+import Utils
 import Node
 
 data Layer = Layer {  
