@@ -83,7 +83,7 @@ createNN numInput numOutput learningRate = NN {
 feedForward :: NN -> NN
 feedForward nn = nn {
                     hidden = calculateNodeValues (input nn) (hidden nn)
-                    ,output = calculateNodeValues (hidden nn) (output nn)
+                    ,output = sigmoidLayerValues (calculateNodeValues (sigmoidLayerValues (hidden nn)) (output nn))
                  }
 
 clearAllValues :: NN -> NN
@@ -96,7 +96,7 @@ clearAllValues nn = nn {
 
 -- calculateError()
 calculateError :: NN -> Double
-calculateError nn = listSum (
+calculateError nn = sumList (
                      listSquared ( 
                            zipWith (\node teacherSignal -> (value node) - teacherSignal) 
                                            (nodes (output nn))  (teacherSignals (output nn))

@@ -7,6 +7,7 @@ module Layer
     ,adjustWeights
     ,clearLayerValues
     ,calculateNodeValues
+    ,sigmoidLayerValues
     ,isOutputLayer
     ,getErrors
 )
@@ -99,27 +100,22 @@ clearLayerValues layer = layer { nodes = (map clearNodeValue (nodes layer)) }
 
 
 -- calculateNodeValues()
-multConstList :: Double -> [Double] -> [Double]
-multConstList const list = map (const *) list
+sumOfWeightsValues :: Layer -> [Double]
+sumOfWeightsValues layer = (foldl1 (zipWith (+)) [multConstList (value node) (weights node) | node <- (nodes layer)])
 
-calculateChildNodeValue :: Node -> Node -> Double
-calculateChildNodeValue node childNode =  (foldl (+) 
-                                                  (value childNode)
-                                                  (multConstList (value node) (weights node)) )
-
-updateChildNode :: Node -> Double -> Node
-updateChildNode node newValue = node { value = newValue }
+updateChildNodeValue :: Double -> Node -> Node
+updateChildNodeValue weightedValue childNode = childNode {
+                                                value = (value childNode) + weightedValue
+                                             }
 
 calculateNodeValues :: Layer -> Layer -> Layer
 calculateNodeValues layer childLayer = childLayer {
-                                        nodes = zipWith 
-                                                (\node childNode -> 
-                                                        updateChildNode 
-                                                                 childNode 
-                                                                 (calculateChildNodeValue node childNode))
-                                                (map sigmoidNodeValue (nodes layer))  (nodes childLayer)
-                                   }
+                                        nodes = zipWith updateChildNodeValue (sumOfWeightsValues layer) (nodes childLayer)
+                                     }
 
+-- sigmoidLayerValues()
+sigmoidLayerValues :: Layer -> Layer
+sigmoidLayerValues layer = layer { nodes = map (\node -> sigmoidNodeValue node) (nodes layer) }
 
 -- isOutputLayer()
 isOutputLayer :: Layer -> Bool
