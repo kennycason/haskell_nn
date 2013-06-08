@@ -54,7 +54,7 @@ setInput nn values = nn { input = mapInputLayer (input nn) values }
 
 -- getOutput()
 getOutput :: NN -> [Double]
-getOutput nn = map (\node -> sigmoid (value node)) (nodes (output nn))
+getOutput nn = map (\node -> (value node)) (nodes (output nn))
 
 
 -- setTeacherSignals()

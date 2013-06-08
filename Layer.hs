@@ -3,10 +3,12 @@ module Layer
     ,createLayer
     ,createEmptyLayer
     ,calculateErrors
+    ,calculateOutputErrors
     ,adjustWeights
     ,clearLayerValues
     ,calculateNodeValues
     ,isOutputLayer
+    ,getErrors
 )
 where
 
@@ -29,7 +31,7 @@ createLayer :: Int -> Int -> Double -> Layer
 createLayer numNodes numWeightsPerNode theLearningRate =
         Layer {
               nodes = (createNodeRow numNodes numWeightsPerNode)
-              ,errors = (replicate numWeightsPerNode 0.0)
+              ,errors = (replicate numNodes 0.0)
               ,teacherSignals = (replicate numNodes 0.0)
               ,learningRate = theLearningRate
         }
@@ -38,23 +40,27 @@ createLayer numNodes numWeightsPerNode theLearningRate =
 createEmptyLayer = createLayer 0 0 0
 
 -- calculateErrors()
-sumNodeError :: Node -> Layer -> Double
-sumNodeError node childLayer = foldl (+) 0 (listProduct (weights node) (errors childLayer))
+normalizeValue :: Node -> Double
+normalizeValue node = (value node) * (1.0 - (value node))
 
-calculateNodeError :: Node -> Layer -> Double
-calculateNodeError node childLayer = (sumNodeError node childLayer) * (value node) * (1.0 - (value node))
+sumError :: Node -> Layer -> Double
+sumError node childLayer = foldl (+) 0 (zipWith (*) (errors childLayer) (weights node))
+
+calculateNodeErrors :: Node -> Layer -> Double
+calculateNodeErrors node childLayer = (sumError node childLayer) * (normalizeValue node)
 
 calculateErrors :: Layer -> Layer -> Layer
-calculateErrors layer childLayer 
-                            | isOutputLayer layer = calculateOutputErrors layer
-                            | otherwise = layer { 
-                                            errors = map (\node -> calculateNodeError node childLayer) (nodes layer)
+calculateErrors layer childLayer | isOutputLayer layer = calculateOutputErrors layer
+                                 | otherwise = layer { 
+                                            errors = map (\node -> calculateNodeErrors node childLayer) (nodes layer)
                                         }
   
+
+-- calculateOutputErrors()
 calculateOutputNodeError :: Node -> Double -> Double
 calculateOutputNodeError node teacherSignal = (teacherSignal - (value node)) 
                                                           * ((value node) * (1.0 - (value node)))
-                        
+           
 calculateOutputErrors :: Layer -> Layer
 calculateOutputErrors layer = layer {
                                 errors = zipWith (\node teacherSignal -> 
@@ -65,18 +71,26 @@ calculateOutputErrors layer = layer {
         
                        
 -- adjustWeights()
-adjustWeightValue :: Double -> Double -> Double -> Double
-adjustWeightValue learningRate value error = value + (learningRate * value * error)
+adjustWeightValue :: Double -> Double -> Double -> Double -> Double
+adjustWeightValue value weight error learningRate =  weight + (learningRate * error * value)
 
-adjustNodeWeight :: Node -> Layer -> Node
-adjustNodeWeight node childLayer = node { 
-                 weights = (map 
-                       (\error -> adjustWeightValue (learningRate childLayer) (value node) error) 
-                       (errors childLayer)
-                 )}
+adjustNodeWeight :: Node -> Layer -> Double -> Node
+adjustNodeWeight node childLayer learningRate = node { 
+                                                 weights = zipWith 
+                                                      (\weight error -> 
+                                                              adjustWeightValue (value node) weight error learningRate)
+                                                                            (weights node)
+                                                                            (errors childLayer) 
+                                               }
 
 adjustWeights :: Layer -> Layer -> Layer
-adjustWeights layer childLayer = layer { nodes = map (\node -> adjustNodeWeight node childLayer) (nodes layer) }
+adjustWeights layer childLayer = layer { 
+                                    nodes = map (\node -> adjustNodeWeight 
+                                                                    node 
+                                                                    childLayer 
+                                                                    (learningRate layer)) 
+                                                                                   (nodes layer) 
+                                }
 
 
 -- clearAllValues()
@@ -115,5 +129,9 @@ isOutputLayer layer = null (weights (getFirstNode layer))
 -- getFirstNode()
 getFirstNode :: Layer -> Node
 getFirstNode layer = head (nodes layer)
+
+-- getErrors()
+getErrors :: Layer -> [Double]
+getErrors layer = (errors layer)
     
 
