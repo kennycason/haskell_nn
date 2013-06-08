@@ -28,9 +28,16 @@ main = do
 
     print "input [1.0, 1.0]"
     let nn3 = feedForward (setInput nn2 [1.0, 1.0])
-    printNN nn3
     print "output"
-    print (getOutput nn3)
+    print (getOutput nn3) 
+    
+    print "back-propagate test"
+    let cycle nn = (clearAllValues.backPropagate.feedForward) nn
+    print (cycle nn3) 
+    print ((cycle.cycle) nn3) 
+    print ((cycle.cycle.cycle) nn3) 
+    print "output"
+    print (getOutput (feedForward (setInput ((cycle.cycle.cycle) nn3) [1.0,1.0]) )
     print "done"
 
 
