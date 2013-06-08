@@ -83,7 +83,7 @@ createNN numInput numOutput learningRate = NN {
 feedForward :: NN -> NN
 feedForward nn = nn {
                     hidden = calculateNodeValues (input nn) (hidden nn)
-                    , output = calculateNodeValues (hidden nn) (output nn)
+                    ,output = calculateNodeValues (hidden nn) (output nn)
                  }
 
 clearAllValues :: NN -> NN
