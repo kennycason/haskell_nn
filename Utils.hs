@@ -1,6 +1,6 @@
 
 module Utils
-   (sigmoid
+    (sigmoid
     ,listProduct
     ,listSquared
     ,listSum

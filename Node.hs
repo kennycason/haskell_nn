@@ -1,5 +1,5 @@
 module Node
-   (Node(..)
+    (Node(..)
     ,numWeights
     ,createNode
     ,compareNode

@@ -1,5 +1,5 @@
 module Layer
-   (Layer(..)
+    (Layer(..)
     ,createLayer
     ,createEmptyLayer
     ,calculateErrors
@@ -41,14 +41,11 @@ createLayer numNodes numWeightsPerNode theLearningRate =
 createEmptyLayer = createLayer 0 0 0
 
 -- calculateErrors()
-normalizeValue :: Node -> Double
-normalizeValue node = (value node) * (1.0 - (value node))
-
 sumError :: Node -> Layer -> Double
-sumError node childLayer = foldl (+) 0 (zipWith (*) (errors childLayer) (weights node))
+sumError node childLayer = sum (zipWith (*) (errors childLayer) (weights node))
 
 calculateNodeErrors :: Node -> Layer -> Double
-calculateNodeErrors node childLayer = (sumError node childLayer) * (normalizeValue node)
+calculateNodeErrors node childLayer = (sumError node childLayer) * (value node) * (1.0 - (value node))
 
 calculateErrors :: Layer -> Layer -> Layer
 calculateErrors layer childLayer | isOutputLayer layer = calculateOutputErrors layer
@@ -59,8 +56,8 @@ calculateErrors layer childLayer | isOutputLayer layer = calculateOutputErrors l
 
 -- calculateOutputErrors()
 calculateOutputNodeError :: Node -> Double -> Double
-calculateOutputNodeError node teacherSignal = (teacherSignal - (value node)) 
-                                                          * ((value node) * (1.0 - (value node)))
+calculateOutputNodeError node teacherSignal = 
+                                (teacherSignal - (value node)) * (value node) * (1.0 - (value node))
            
 calculateOutputErrors :: Layer -> Layer
 calculateOutputErrors layer = layer {
@@ -101,16 +98,21 @@ clearLayerValues layer = layer { nodes = (map clearNodeValue (nodes layer)) }
 
 -- calculateNodeValues()
 sumOfWeightsValues :: Layer -> [Double]
-sumOfWeightsValues layer = (foldl1 (zipWith (+)) [multConstList (value node) (weights node) | node <- (nodes layer)])
+sumOfWeightsValues layer = foldl1 (zipWith (+)) 
+                               [multConstList (value node) (weights node) 
+                               | node <- (nodes layer)]
 
 updateChildNodeValue :: Double -> Node -> Node
 updateChildNodeValue weightedValue childNode = childNode {
-                                                value = (value childNode) + weightedValue
+                                                value = weightedValue
                                              }
 
 calculateNodeValues :: Layer -> Layer -> Layer
 calculateNodeValues layer childLayer = childLayer {
-                                        nodes = zipWith updateChildNodeValue (sumOfWeightsValues layer) (nodes childLayer)
+                                        nodes = zipWith 
+                                                    updateChildNodeValue 
+                                                            (sumOfWeightsValues layer) 
+                                                            (nodes childLayer)
                                      }
 
 -- sigmoidLayerValues()
